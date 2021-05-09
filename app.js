@@ -5,7 +5,7 @@ const morgan = require('morgan')
 const router = express.Router()
 const http = require('http').createServer(app)
 app.set('port', process.env.PORT || 3000); //verifica si el puerto esta ocupado y le repsonde con u puerto que este libre
-
+ 
 // Declaracion de middelware
 
 app.use(morgan('tiny')) // nos dice cuando se hace una peticion
