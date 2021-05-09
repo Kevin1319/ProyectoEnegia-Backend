@@ -8,7 +8,8 @@ const app = express()
 const bodyParser = require('body-parser')
 let mongoose  = require('mongoose')
 let md5 = require('md5')
-const usermiddleware = require('./Users.js')
+const userRouter = require('./routers/routerUsers')
+const usermiddleware = require('./middleware.js')
 const jwt = require('jsonwebtoken')
 let connectionstrings = "mongodb+srv://Esp32:esp32@servidor.veq4u.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 const port = process.env.PORT || 3000
@@ -19,20 +20,6 @@ app.use(morgan('tiny')) // nos dice cuando se hace una peticion
 
 //-----------------------------------------------------------------------------------
 //Crea tabla para el servidor mongodb
-
-let tablaRegister = new mongoose.Schema({
-    _id : String,
-    name : String,
-   lastName : String,
-    dateOfBirth : String,
-    password : String,
-    email : String,
-    rol : Number
-})
-let  tablaRol = new mongoose.Schema({
-
-})
-
 
 let tablaDevice = new mongoose.Schema({
     _id : Number,
@@ -51,25 +38,16 @@ let tablaSensores = new mongoose.Schema({
 
 //Declaracion de tablas 
 
-//let usuario = mongoose.model("usuarios", sistemaPlacas)
-let registerUsuario = mongoose.model("register",tablaRegister)
-let device = mongoose.model("device",tablaDevice)
-let sensores = mongoose.model("sensores",tablaSensores)
-
 //------------------------------------------------------------------------------
+
+app.use('/api/users',userRouter)
+
+
 
 
 //********************************************************************************************************************************
 // Metodos POST Y GET
 
-app.post('/temp',usermiddleware.isLoggedIn,(req,res,next) =>{
-    console.log("Alguien consulta ...")
-    let payload = {
-        "Mensaje" : "Temperatura",
-        "temp" : 18.2
-    }
-    res.send(req.body)
-})
 app.post('/sensores',usermiddleware.isLoggedDevice,(req,res,next) =>{
     console.log("Alguien consulta ...")
     let datos = req.body
@@ -87,51 +65,8 @@ app.post('/sensores',usermiddleware.isLoggedDevice,(req,res,next) =>{
     }
     
 })
-app.get('/recopilacion',(req,res,next) =>{
-    let query = {}
-    valorEnergia.find(query,(err, result)=>{
-        if(err){
-            console.log("Error consultando ...")
-            res.send({
-                "mensaje" : "Error en la consulta"
-            })
-        }
-        else{
-            console.log("Consulta realizada")
-            res.send(result)
-        }
-    })
-    let payload = {
-        "Mensaje" : "Temperatura",
-        "temp" : 18.2
-    }
-    //res.send(payload)
-})
-
-
-app.post('/register',usermiddleware.validateRegistration,(req,res,next)=>{
-    //console.log(req.body)
-    let datos = req.body
-    if(datos){
-        // hace un hash a la contraseña
-        datos.password = md5(datos.password)
-        let misDatos = registerUsuario(datos)
-        misDatos.save().then(item =>{
-            console.log("El registro fue guardado en la base de datos")
-            return res.send({
-                "Mensaje" : "El usuario se ha registrado de forma correcta"
-            })
-        })
-    }else {
-        payload = {
-            "Mensaje" : "No se registro el Usuario"
-        }
-        res.send(payload)
-    }
-
-})
 //app.post('/registerDevice',usermiddleware.validateDevice,usermiddleware.isLoggedIn,(req,res,next)=>{
-app.post('/registerDevice',(req,res,next)=>{
+/*app.post('/registerDevice',(req,res,next)=>{
     let datos = req.body
     if(datos){
         datos.nameDevice = md5(datos.nameDevice)// hace un hash a la contraseña
@@ -149,10 +84,10 @@ app.post('/registerDevice',(req,res,next)=>{
         res.send(payload)
     }
     
-})
+})*/
 
 
-app.post('/loginUser',(req,res,next)=>{
+app.post('/login',(req,res,next)=>{
     let datos = req.body
     if(datos){
         datos.password = md5(datos.password)
@@ -294,4 +229,4 @@ mongoose.connect(connectionstrings, {useNewUrlParser: true, useUnifiedTopology: 
 })
 
 
-app.listen(port,()=> console.log("Servidor esuchando ene l puerto : "+ port))
+app.listen(port,()=> console.log("Servidor escuchando en el puerto : "+ port))
