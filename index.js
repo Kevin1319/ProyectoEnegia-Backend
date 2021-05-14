@@ -3,6 +3,7 @@
 *@api
 */
 const express = require('express')
+const cors = require('cors')
 const morgan = require('morgan')
 const app = express()
 const bodyParser = require('body-parser')
@@ -14,6 +15,7 @@ const jwt = require('jsonwebtoken')
 let connectionstrings = "mongodb+srv://Esp32:esp32@servidor.veq4u.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 const port = process.env.PORT || 3000
 
+app.use(cors())
 app.use(express.json({ limit: '50mb'}))
 app.use(express.urlencoded({limit: '50mb'}))
 app.use(morgan('tiny')) // nos dice cuando se hace una peticion
@@ -35,7 +37,7 @@ let tablaSensores = new mongoose.Schema({
     fecha : String,
     desconexion : Number
 })
-
+ 
 //Declaracion de tablas 
 
 //------------------------------------------------------------------------------
@@ -48,7 +50,7 @@ app.use('/api/users',userRouter)
 //********************************************************************************************************************************
 // Metodos POST Y GET
 
-app.post('/sensores',usermiddleware.isLoggedDevice,(req,res,next) =>{
+app.post('/sensores',usermiddleware.isLoggedIn,(req,res,next) =>{
     console.log("Alguien consulta ...")
     let datos = req.body
     if(datos){
