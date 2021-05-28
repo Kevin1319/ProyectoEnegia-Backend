@@ -24,10 +24,9 @@ app.use(morgan('tiny')) // nos dice cuando se hace una peticion
 //Crea tabla para el servidor mongodb
 
 let tablaDevice = new mongoose.Schema({
-    _id : Number,
     nameDevice : String,
-    location : Number,
-    typeDevice : Number
+    location : String,
+    typeDevice : String
 })
 let tablaSensores = new mongoose.Schema({
     idDevice : Number,
@@ -39,7 +38,7 @@ let tablaSensores = new mongoose.Schema({
 })
  
 //Declaracion de tablas 
-
+let device = mongoose.model("device",tablaDevice)
 //------------------------------------------------------------------------------
 
 app.use('/api/users',userRouter)
@@ -68,7 +67,7 @@ app.post('/sensores',usermiddleware.isLoggedIn,(req,res,next) =>{
     
 })
 //app.post('/registerDevice',usermiddleware.validateDevice,usermiddleware.isLoggedIn,(req,res,next)=>{
-/*app.post('/registerDevice',(req,res,next)=>{
+app.post('/registerDevice',(req,res,next)=>{
     let datos = req.body
     if(datos){
         datos.nameDevice = md5(datos.nameDevice)// hace un hash a la contraseña
@@ -76,7 +75,7 @@ app.post('/sensores',usermiddleware.isLoggedIn,(req,res,next) =>{
         misDatos.save().then(item =>{
             console.log("El registro fue guardado en la base de datos")
              return res.send({
-                "Mensaje" : "El dispositivo se ha registrado de forma correcta"
+                "Mensaje" : "OK"
             })
         })
     }else {
@@ -86,7 +85,7 @@ app.post('/sensores',usermiddleware.isLoggedIn,(req,res,next) =>{
         res.send(payload)
     }
     
-})*/
+})
 
 
 app.post('/login',(req,res,next)=>{

@@ -14,11 +14,13 @@ exports.register = async(req, res) =>{
 
 exports.login = async (req, res) => {
     try {  
-        const token = await modelUsers.login(req.body)
+        const [token,name] = await modelUsers.login(req.body)
         console.log(token)
+        console.log(name)
         return res.send({
             "Mensaje" : "ha iniciado sesion",
-            'token' : token
+            'token' : token,
+            'name' : name
         }) 
     } catch (error) {
         res.status(error.statusCode || 500).send(error.body || error.toString());

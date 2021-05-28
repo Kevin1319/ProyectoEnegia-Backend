@@ -54,14 +54,14 @@ tablaRegister.statics.login = async function login(datos){
         if(result[0]){
             console.log(result)
             const token = jwt.sign({
-                email : result.email,
-                name : result.name
+                email : result[0].email,
+                name : result[0].name
             },
                 "User",{
                     expiresIn : "10min"
                 }
             )
-            return token
+            return [token,result[0].name]
         }else{
             const err = new Error('No esta registrado ')
         err.body = {
