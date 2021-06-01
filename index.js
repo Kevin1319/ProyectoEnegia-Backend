@@ -39,6 +39,7 @@ let tablaSensores = new mongoose.Schema({
  
 //Declaracion de tablas 
 let device = mongoose.model("device",tablaDevice)
+let sensores = mongoose.model("sensores",tablaSensores)
 //------------------------------------------------------------------------------
 
 app.use('/api/users',userRouter)
@@ -48,6 +49,49 @@ app.use('/api/users',userRouter)
 
 //********************************************************************************************************************************
 // Metodos POST Y GET
+
+app.get('/infosensores',(req,res,next) =>{
+    let query = {}
+    sensores.find(query,(err, result)=>{
+        if(err){
+            console.log("Error consultando ...")
+            res.send({
+                "mensaje" : "Error en la consulta"
+            })
+        }
+        else{
+            console.log("Consulta realizada")
+            res.send(result)
+        }
+    })
+    let payload = {
+        "Mensaje" : "Temperatura",
+        "temp" : 18.2
+    }
+    //res.send(payload)
+})
+
+app.get('/infordevices',(req,res,next) =>{
+    let query = {}
+    device.find(query,(err, result)=>{
+        if(err){
+            console.log("Error consultando ...")
+            res.send({
+                "mensaje" : "Error en la consulta"
+            })
+        }
+        else{
+            console.log("Consulta realizada")
+            res.send(result)
+        }
+    })
+    let payload = {
+        "Mensaje" : "Temperatura",
+        "temp" : 18.2
+    }
+    //res.send(payload)
+})
+
 
 app.post('/sensores',usermiddleware.isLoggedIn,(req,res,next) =>{
     console.log("Alguien consulta ...")
@@ -67,10 +111,10 @@ app.post('/sensores',usermiddleware.isLoggedIn,(req,res,next) =>{
     
 })
 //app.post('/registerDevice',usermiddleware.validateDevice,usermiddleware.isLoggedIn,(req,res,next)=>{
-app.post('/registerDevice',(req,res,next)=>{
+app.post('/registerDevice',usermiddleware.isLoggedIn,(req,res,next)=>{
     let datos = req.body
     if(datos){
-        datos.nameDevice = md5(datos.nameDevice)// hace un hash a la contraseña
+        //datos.nameDevice = md5(datos.nameDevice)// hace un hash a la contraseña
         let misDatos = device(datos) // guardo lo datos del mismo formato de la tabla
         misDatos.save().then(item =>{
             console.log("El registro fue guardado en la base de datos")
